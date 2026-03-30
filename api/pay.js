@@ -28,7 +28,7 @@ amount = parseFloat(amount).toFixed(2);
   res.send(`
     <html>
       <body onload="document.forms[0].submit()">
-        <form method="POST" action="https://www.payhere.lk/pay/checkout">
+        <form method="POST" action="https://sandbox.payhere.lk/pay/checkout">
           <input type="hidden" name="merchant_id" value="${merchantId}" />
           <input type="hidden" name="order_id" value="${order}" />
           <input type="hidden" name="items" value="Order ${order}" />
