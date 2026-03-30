@@ -1,43 +1,58 @@
-import crypto from "crypto";
+import express from "express";
+import bodyParser from "body-parser";
+import axios from "axios";
 
-export default function handler(req, res) {
-  let { amount, order, name } = req.query;
-amount = parseFloat(amount).toFixed(2);
+const app = express();
+app.use(bodyParser.json());
 
-  const merchantId = "253545";
-  const merchantSecret = "MzI3NDA1Njk4MzI0MDg1NzgzNzIyODcyMTA0OTEzMTkyNzk3Njk4";
-  const currency = "LKR";
 
-  
-  const secretHash = crypto
-    .createHash("md5")
-    .update(merchantSecret)
-    .digest("hex")
-    .toUpperCase();
+const MERCHANT_ID = "253545";
+const MERCHANT_SECRET = "MzI3NDA1Njk4MzI0MDg1NzgzNzIyODcyMTA0OTEzMTkyNzk3Njk4";
 
-  
-  const hashString = merchantId + order + amount + currency + secretHash;
 
-  
-  const hash = crypto
-    .createHash("md5")
-    .update(hashString)
-    .digest("hex")
-    .toUpperCase();
+app.post("/api/payhere-checkout", async (req, res) => {
+  try {
+    const { order_id, items, amount, customer } = req.body;
 
-  res.send(`
-    <html>
-      <body onload="document.forms[0].submit()">
-        <form method="POST" action="https://sandbox.payhere.lk/pay/checkout">
-          <input type="hidden" name="merchant_id" value="${merchantId}" />
-          <input type="hidden" name="order_id" value="${order}" />
-          <input type="hidden" name="items" value="Order ${order}" />
-          <input type="hidden" name="currency" value="${currency}" />
-          <input type="hidden" name="amount" value="${amount}" />
-          <input type="hidden" name="first_name" value="${name}" />
-          <input type="hidden" name="hash" value="${hash}" />
-        </form>
-      </body>
-    </html>
-  `);
-}
+    const payload = {
+      merchant_id: MERCHANT_ID,
+      return_url: "https://swingsbyryzu.com",
+      cancel_url: "https://swingsbyryzu.com",
+      notify_url: "https://payhere-backend-zm4p-3wwnd51kx-aussiewebstudioz-2297s-projects.vercel.app",
+      order_id,
+      items,
+      amount,
+      currency: "LKR",
+      first_name: customer.firstName,
+      last_name: customer.lastName,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      city: customer.city,
+      country: "Sri Lanka",
+    };
+
+    const response = await axios.post("https://www.payhere.lk/pay/checkout", payload);
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Checkout failed" });
+  }
+});
+
+// Route to handle PayHere notifications
+app.post("/api/payhere-notify", (req, res) => {
+  const paymentData = req.body;
+
+  // Verify payment status
+  if (paymentData.status === "SUCCESS") {
+    console.log("Payment successful:", paymentData);
+    // TODO: Verify signature using MERCHANT_SECRET before updating DB
+  } else {
+    console.log("Payment failed:", paymentData);
+  }
+
+  res.sendStatus(200); // Always respond 200 to PayHere
+});
+
+export default app;
