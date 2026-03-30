@@ -1,7 +1,8 @@
 import crypto from "crypto";
 
 export default function handler(req, res) {
-  const { amount, order, name } = req.query;
+  let { amount, order, name } = req.query;
+amount = parseFloat(amount).toFixed(2);
 
   const merchantId = "253545";
   const merchantSecret = "MzI3NDA1Njk4MzI0MDg1NzgzNzIyODcyMTA0OTEzMTkyNzk3Njk4";
