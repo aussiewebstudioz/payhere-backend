@@ -1,29 +1,41 @@
+import crypto from "crypto";
+
 export default function handler(req, res) {
   const { amount, order, name } = req.query;
 
   const merchantId = "253545";
+  const merchantSecret = "MzI3NDA1Njk4MzI0MDg1NzgzNzIyODcyMTA0OTEzMTkyNzk3Njk4";
 
-  if (!amount || !order || !name) {
-    return res.status(400).send("Missing required parameters");
-  }
+  const currency = "LKR";
 
-  const returnUrl = "https://swingsbyryzu.com";
-  const cancelUrl = "https://swingsbyryzu.com";
-  const notifyUrl = "https://payhere-backend-zm4p-41pxjx4to-aussiewebstudioz-2297s-projects.vercel.app/api/payhere-webhook";
+  // Generate hash
+  const hash = crypto
+    .createHash("md5")
+    .update(
+      merchantId +
+        order +
+        amount +
+        currency +
+        crypto
+          .createHash("md5")
+          .update(merchantSecret)
+          .digest("hex")
+          .toUpperCase()
+    )
+    .digest("hex")
+    .toUpperCase();
 
   res.send(`
     <html>
       <body onload="document.forms[0].submit()">
         <form method="POST" action="https://www.payhere.lk/pay/checkout">
           <input type="hidden" name="merchant_id" value="${merchantId}" />
-          <input type="hidden" name="return_url" value="${returnUrl}" />
-          <input type="hidden" name="cancel_url" value="${cancelUrl}" />
-          <input type="hidden" name="notify_url" value="${notifyUrl}" />
           <input type="hidden" name="order_id" value="${order}" />
           <input type="hidden" name="items" value="Order ${order}" />
-          <input type="hidden" name="currency" value="LKR" />
+          <input type="hidden" name="currency" value="${currency}" />
           <input type="hidden" name="amount" value="${amount}" />
           <input type="hidden" name="first_name" value="${name}" />
+          <input type="hidden" name="hash" value="${hash}" />
         </form>
       </body>
     </html>
