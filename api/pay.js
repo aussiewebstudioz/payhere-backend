@@ -1,7 +1,7 @@
 export default function handler(req, res) {
   const { amount, order, name } = req.query;
 
-  const merchantId = process.env.PAYHERE_MERCHANT_ID;
+  const merchantId = "253545";
 
   if (!amount || !order || !name) {
     return res.status(400).send("Missing required parameters");
