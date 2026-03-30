@@ -8,17 +8,17 @@ amount = parseFloat(amount).toFixed(2);
   const merchantSecret = "MzI3NDA1Njk4MzI0MDg1NzgzNzIyODcyMTA0OTEzMTkyNzk3Njk4";
   const currency = "LKR";
 
-  // Step 1: hash the merchant secret
+  
   const secretHash = crypto
     .createHash("md5")
     .update(merchantSecret)
     .digest("hex")
     .toUpperCase();
 
-  // Step 2: create final hash string EXACTLY in this order
+  
   const hashString = merchantId + order + amount + currency + secretHash;
 
-  // Step 3: final hash
+  
   const hash = crypto
     .createHash("md5")
     .update(hashString)
