@@ -10,7 +10,7 @@ export default function handler(req, res) {
   // 
   const returnUrl = "https://www.swingsbyryzu.com/thank_you";
   const cancelUrl = "https://www.swingsbyryzu.com/orders/{order-id}/authenticate";
-  const notifyUrl = "https://vercel.com/aussiewebstudioz-2297s-projects/payhere-backend-zm4p/7iuQ35nnBPSuab1KdG2XbT2fpVb7/api/payhere-webhook";
+  const notifyUrl = "https://payhere-backend-zm4p-gz3rp15y4-aussiewebstudioz-2297s-projects.vercel.app/api/payhere-webhook";
 
   const payHereUrl =
     "https://www.payhere.lk/pay/checkout?" +
